@@ -38,3 +38,4 @@ Voir `.env.example`. Les clés `SUPABASE_SERVICE_ROLE_KEY`, `BREVO_API_KEY` et `
 ## À venir
 
 Création du premier admin et déploiement : documentés en phases 6 à 9.
+# kommel
