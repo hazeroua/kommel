@@ -96,11 +96,14 @@ export default async function HomePage() {
 
       <Stats stats={stats && stats.length > 0 ? stats : undefined} />
 
-      <section className="overflow-hidden bg-pervenche px-5 py-16 sm:px-8 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <p className="text-center font-display text-[clamp(2.5rem,8vw,7rem)] font-extrabold uppercase leading-none text-brun">
-            Oser · Bouger · Transmettre · Oser · Bouger · Transmettre
-          </p>
+      <section className="overflow-hidden bg-pervenche py-16 sm:py-20">
+        <div
+          className="marquee font-display text-[clamp(2.5rem,8vw,7rem)] font-extrabold uppercase leading-none text-brun"
+          aria-hidden="true"
+        >
+          {/* Deux copies identiques → le défilement est seamless (translate 0 → -50 %). */}
+          <span>Oser&nbsp;·&nbsp;Bouger&nbsp;·&nbsp;Transmettre&nbsp;·&nbsp;Oser&nbsp;·&nbsp;Bouger&nbsp;·&nbsp;Transmettre&nbsp;·&nbsp;</span>
+          <span>Oser&nbsp;·&nbsp;Bouger&nbsp;·&nbsp;Transmettre&nbsp;·&nbsp;Oser&nbsp;·&nbsp;Bouger&nbsp;·&nbsp;Transmettre&nbsp;·&nbsp;</span>
         </div>
       </section>
 

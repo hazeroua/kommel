@@ -241,3 +241,25 @@
       box-shadow 0.2s ease;
   }
 }
+
+/* ===== Marquee infini (bandeau Oser · Bouger · Transmettre) ================ */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+}
+.marquee > span {
+  display: inline-block;
+  padding-right: 3rem; /* séparation visuelle entre les cycles */
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { animation: none; }
+}
