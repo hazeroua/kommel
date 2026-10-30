@@ -1,11 +1,20 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { sendMagicLink } from "@/app/actions/admin-auth";
 
 const initial = { error: undefined as string | undefined, success: false };
 
 export default function ConnexionPage() {
+  const originRef = useRef<HTMLInputElement>(null);
+
+  // Injecte l'origine réelle (port inclus) côté client
+  useEffect(() => {
+    if (originRef.current) {
+      originRef.current.value = window.location.origin;
+    }
+  }, []);
+
   const [state, formAction, pending] = useActionState(
     async (_prev: typeof initial, fd: FormData) => {
       const result = await sendMagicLink(_prev, fd);
@@ -34,6 +43,9 @@ export default function ConnexionPage() {
             </div>
           ) : (
             <form action={formAction} className="grid gap-5">
+              {/* Champ caché : origine réelle injectée côté client */}
+              <input ref={originRef} type="hidden" name="origin" defaultValue="" />
+
               <div>
                 <h1 className="font-display text-xl font-bold uppercase">Accès administration</h1>
                 <p className="mt-1 text-sm text-brun/70">

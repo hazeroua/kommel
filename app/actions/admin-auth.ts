@@ -8,7 +8,12 @@ import { z } from "zod";
 
 const emailSchema = z.string().email("Adresse e-mail invalide.");
 
-/** Envoie un magic link si l'e-mail est dans la liste des admins. */
+/**
+ * Envoie un magic link si l'e-mail est dans la liste des admins.
+ * Le callbackUrl est construit depuis l'origine passée par le formulaire
+ * (window.location.origin côté client) — ça marche sur n'importe quel port
+ * en local ET sur le vrai domaine en production.
+ */
 export async function sendMagicLink(_prev: { error?: string }, formData: FormData) {
   const email = formData.get("email");
   const parsed = emailSchema.safeParse(email);
@@ -29,7 +34,15 @@ export async function sendMagicLink(_prev: { error?: string }, formData: FormDat
     return { success: true };
   }
 
-  const callbackUrl = `${env.siteUrl}/auth/callback`;
+  // Utilise l'origine réelle du client (port dynamique en local, vrai domaine en prod)
+  const rawOrigin = String(formData.get("origin") ?? "").trim();
+  const origin =
+    rawOrigin && /^https?:\/\//.test(rawOrigin)
+      ? rawOrigin
+      : (env.siteUrl ?? "http://localhost:3000");
+
+  const callbackUrl = `${origin}/auth/callback`;
+
   const supabase = await createSessionClient();
   if (!supabase) return { error: "Service non disponible." };
 
