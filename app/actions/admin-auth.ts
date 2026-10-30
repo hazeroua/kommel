@@ -9,17 +9,46 @@ import { z } from "zod";
 const emailSchema = z.string().email("Adresse e-mail invalide.");
 
 /**
+ * Connexion email + mot de passe.
+ * Redirige vers /admin si succès.
+ */
+type AuthState = { error?: string; success?: boolean };
+
+export async function signInWithPassword(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  const password = String(formData.get("password") ?? "");
+
+  const parsed = emailSchema.safeParse(email);
+  if (!parsed.success) return { error: "Adresse e-mail invalide." };
+  if (!password) return { error: "Mot de passe requis." };
+
+  const supabase = await createSessionClient();
+  if (!supabase) return { error: "Service non disponible." };
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: parsed.data,
+    password,
+  });
+
+  if (error) {
+    console.error("[admin-auth] signInWithPassword", error.message);
+    return { error: "E-mail ou mot de passe incorrect." };
+  }
+
+  redirect("/admin");
+}
+
+/**
  * Envoie un magic link si l'e-mail est dans la liste des admins.
- * Le callbackUrl est construit depuis l'origine passée par le formulaire
- * (window.location.origin côté client) — ça marche sur n'importe quel port
- * en local ET sur le vrai domaine en production.
  */
 export async function sendMagicLink(_prev: { error?: string }, formData: FormData) {
   const email = formData.get("email");
   const parsed = emailSchema.safeParse(email);
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "E-mail invalide." };
 
-  // Vérification via service role (contourne RLS pour la vérification d'admin)
   const service = createServiceClient();
   if (!service) return { error: "Service non disponible." };
 
@@ -30,11 +59,9 @@ export async function sendMagicLink(_prev: { error?: string }, formData: FormDat
     .maybeSingle();
 
   if (!admin) {
-    // Ne pas révéler si l'e-mail est inconnu — même réponse dans tous les cas
     return { success: true };
   }
 
-  // Utilise l'origine réelle du client (port dynamique en local, vrai domaine en prod)
   const rawOrigin = String(formData.get("origin") ?? "").trim();
   const origin =
     rawOrigin && /^https?:\/\//.test(rawOrigin)

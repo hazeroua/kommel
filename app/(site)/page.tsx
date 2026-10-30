@@ -3,8 +3,48 @@ import { Hero } from "@/components/sections/Hero";
 import { Stats } from "@/components/sections/Stats";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { InstagramGrid } from "@/components/sections/InstagramGrid";
+import { createSessionClient } from "@/lib/supabase/server";
+import type { AccentColor } from "@/types";
 
-export default function HomePage() {
+export const revalidate = 0;
+
+type StatRow = {
+  prefix: string;
+  value: number;
+  suffix: string;
+  label: string;
+  color: AccentColor;
+};
+type TestimonialRow = {
+  quote: string;
+  author: string;
+  color: AccentColor;
+};
+
+async function getHomeData() {
+  const db = await createSessionClient();
+  if (!db) return { stats: null, testimonials: null };
+  const [statsRes, testimonialsRes] = await Promise.all([
+    db
+      .from("key_stats")
+      .select("prefix,value,suffix,label,color")
+      .order("sort_order"),
+    db
+      .from("testimonials")
+      .select("quote,author,color")
+      .eq("visible", true)
+      .order("sort_order")
+      .limit(10),
+  ]);
+  return {
+    stats: (statsRes.data as StatRow[] | null) ?? null,
+    testimonials: (testimonialsRes.data as TestimonialRow[] | null) ?? null,
+  };
+}
+
+export default async function HomePage() {
+  const { stats, testimonials } = await getHomeData();
+
   return (
     <>
       <Hero />
@@ -40,7 +80,7 @@ export default function HomePage() {
           </div>
           <div className="grid gap-5 md:grid-cols-3">
             {[
-              ["01", "Interventions", "Dans les établissements, on parle confiance, orientation et égalité." , "bg-corail"],
+              ["01", "Interventions", "Dans les établissements, on parle confiance, orientation et égalité.", "bg-corail"],
               ["02", "Rencontres sportives", "Des initiations et des échanges pour rendre le haut niveau accessible.", "bg-pervenche"],
               ["03", "Transmission", "Des modèles inspirants qui donnent envie de passer à l’action.", "bg-rose"],
             ].map(([number, title, text, color], index) => (
@@ -54,7 +94,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Stats />
+      <Stats stats={stats && stats.length > 0 ? stats : undefined} />
 
       <section className="overflow-hidden bg-pervenche px-5 py-16 sm:px-8 sm:py-20">
         <div className="mx-auto max-w-7xl">
@@ -64,7 +104,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <Testimonials />
+      <Testimonials
+        testimonials={testimonials && testimonials.length > 0 ? testimonials : undefined}
+      />
 
       <InstagramGrid />
 

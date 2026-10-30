@@ -1,22 +1,33 @@
-import { createSessionClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 
 export const metadata = { title: "Tableau de bord" };
+export const dynamic = "force-dynamic";
 
+/**
+ * Dashboard admin : lectures via le service client (bypass RLS).
+ * L'accès à /admin/* est déjà protégé par le proxy, donc on sait qu'on parle
+ * à un admin — pas besoin de refaire passer RLS sur les reads du dashboard,
+ * ce qui garantit que les compteurs s'affichent toujours.
+ */
 async function getStats() {
-  const db = await createSessionClient();
+  const db = createServiceClient();
   if (!db) return null;
 
   const [posts, testimonials, stats, demandes, messages] = await Promise.all([
     db.from("posts").select("id", { count: "exact", head: true }),
     db.from("testimonials").select("id", { count: "exact", head: true }),
     db.from("key_stats").select("id", { count: "exact", head: true }),
-    db.from("intervention_requests").select("id,status", { count: "exact" }),
-    db.from("contact_messages").select("id,status", { count: "exact" }),
+    db.from("intervention_requests").select("status", { count: "exact" }),
+    db.from("contact_messages").select("status", { count: "exact" }),
   ]);
 
-  const nouvelleDemandes = (demandes.data ?? []).filter((d) => d.status === "nouvelle").length;
-  const nouveauxMessages = (messages.data ?? []).filter((m) => m.status === "nouveau").length;
+  const nouvelleDemandes = (demandes.data ?? []).filter(
+    (d) => d.status === "nouvelle",
+  ).length;
+  const nouveauxMessages = (messages.data ?? []).filter(
+    (m) => m.status === "nouvelle",
+  ).length;
 
   return {
     posts: posts.count ?? 0,
@@ -46,7 +57,6 @@ export default async function AdminDashboardPage() {
 
       {data && (
         <>
-          {/* Alertes */}
           {(data.nouvelleDemandes > 0 || data.nouveauxMessages > 0) && (
             <div className="mb-8 grid gap-4 sm:grid-cols-2">
               {data.nouvelleDemandes > 0 && (
@@ -76,7 +86,6 @@ export default async function AdminDashboardPage() {
             </div>
           )}
 
-          {/* Grille sections */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {sections.map((s) => (
               <Link
