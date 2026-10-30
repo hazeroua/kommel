@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Hero } from "@/components/sections/Hero";
 import { Stats } from "@/components/sections/Stats";
 import { Testimonials } from "@/components/sections/Testimonials";
-import { InstagramGrid } from "@/components/sections/InstagramGrid";
 import { createSessionClient } from "@/lib/supabase/server";
 import type { AccentColor } from "@/types";
 
@@ -110,8 +109,6 @@ export default async function HomePage() {
       <Testimonials
         testimonials={testimonials && testimonials.length > 0 ? testimonials : undefined}
       />
-
-      <InstagramGrid />
 
       <section className="px-5 pb-8 sm:px-8 sm:pb-16">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 rounded-bento bg-rose p-8 shadow-dure-lg sm:p-12 md:flex-row md:items-center">
