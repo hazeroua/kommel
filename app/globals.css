@@ -1,0 +1,243 @@
+@import "tailwindcss";
+@import "./styles/tokens.css";
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-creme);
+    color: var(--color-brun);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-rose);
+    color: var(--color-brun);
+  }
+
+  /* Focus visible stylé, partout */
+  :focus-visible {
+    outline: 3px solid var(--color-bleu-roi);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-moutarde);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Texture de grain « papier imprimé » (aucune requête réseau)          */
+/* ------------------------------------------------------------------ */
+@layer base {
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.29 0 0 0 0 0.2 0 0 0 0 0.2 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Composants signature                                                */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /* Backoffice : hiérarchie plus dense que le site public. */
+  .admin-shell h1 {
+    font-size: 1.75rem;
+    line-height: 1.05;
+  }
+
+  /* Bouton pilule : rotation + agrandissement + squish élastique */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+    min-height: 3rem;
+    padding: 0.7em 1.5em 0.6em;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    box-shadow: var(--shadow-dure);
+    transition:
+      transform 0.45s var(--ease-elastique),
+      box-shadow 0.25s var(--ease-douce),
+      background-color 0.2s ease;
+    will-change: transform;
+  }
+  .btn:hover {
+    transform: rotate(-2deg) scale(1.05);
+    box-shadow: var(--shadow-dure-lg);
+  }
+  .btn:active {
+    transform: rotate(-2deg) scale(0.94, 0.9);
+    box-shadow: 1px 1px 0 0 var(--color-brun);
+    transition-duration: 0.12s;
+  }
+
+  .btn-primary {
+    background-color: var(--color-bleu-roi);
+    color: var(--color-blanc);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-bleu-roi-fonce);
+  }
+  .btn-secondary {
+    background-color: var(--color-blanc);
+    color: var(--color-brun);
+  }
+  .btn-moutarde {
+    background-color: var(--color-moutarde);
+    color: var(--color-brun);
+  }
+  .btn-rose {
+    background-color: var(--color-rose);
+    color: var(--color-brun);
+  }
+  .btn-sm {
+    min-height: 2.5rem;
+    font-size: 0.9375rem;
+    padding: 0.6em 1.15em 0.5em;
+  }
+
+  /* Chiffre-clé façon autocollant : contour blanc épais + ombre dure brune */
+  .stat-sticker {
+    font-family: var(--font-display);
+    font-weight: 800;
+    -webkit-text-stroke: 0.14em var(--color-blanc);
+    paint-order: stroke fill;
+    filter: drop-shadow(0.05em 0.05em 0 var(--color-brun));
+  }
+
+  /* Lien texte avec soulignement épais façon feutre */
+  .link-feutre {
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.18em;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--color-moutarde);
+    transition: text-decoration-color 0.2s ease;
+  }
+  .link-feutre:hover {
+    text-decoration-color: var(--color-corail);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Mouvement réduit : on coupe toutes les transformations              */
+/* ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ */
+/* Formulaires                                                          */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .field-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-brun);
+  }
+
+  .field-input {
+    display: block;
+    width: 100%;
+    padding: 0.65em 1em;
+    border: 2px solid var(--color-brun);
+    border-radius: var(--radius-card);
+    background-color: var(--color-blanc);
+    color: var(--color-brun);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 2px 2px 0 0 var(--color-brun);
+  }
+  .field-input::placeholder {
+    color: var(--color-brun);
+    opacity: 0.4;
+  }
+  .field-input:focus-visible {
+    outline: none;
+    border-color: var(--color-bleu-roi);
+    box-shadow: 3px 3px 0 0 var(--color-bleu-roi);
+  }
+  select.field-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a3433' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1em center;
+    padding-right: 2.5em;
+    cursor: pointer;
+  }
+
+  .field-error {
+    margin-top: 0.3rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-corail);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: var(--color-brun);
+    border: 2px solid var(--color-brun);
+  }
+  .btn-outline:hover {
+    background-color: var(--color-creme);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+  .btn,
+  .btn:hover,
+  .btn:active {
+    transform: none;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+}

@@ -1,0 +1,7 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { PageIntro } from "@/components/sections/PageIntro";
+
+const titles: Record<string,string> = {"sport-confiance":"Le sport comme tremplin vers la confiance","prochaine-intervention":"KOM'MEL vient à votre rencontre","transmettre":"Transmettre pour ouvrir le champ des possibles"};
+export function generateStaticParams(){return Object.keys(titles).map(slug=>({slug}));}
+export default async function ArticlePage({params}:{params:Promise<{slug:string}>}){const {slug}=await params; const title=titles[slug]; if(!title) notFound(); return <><PageIntro eyebrow="Actualité" title={title} color="moutarde">Une histoire KOM&apos;MEL à partager avec les jeunes, les familles et toutes celles et ceux qui font vivre le sport.</PageIntro><article className="mx-auto max-w-3xl px-5 py-16 text-lg sm:px-8 sm:py-24"><p>Chez KOM&apos;MEL, chaque rencontre est une occasion de faire circuler la confiance. Nous partons des expériences vécues, des questions du terrain et de l&apos;énergie du collectif pour ouvrir de nouvelles possibilités.</p><p className="mt-6">Le sport n&apos;est pas seulement une pratique : c&apos;est un langage commun, un espace pour essayer, recommencer et transmettre. C&apos;est cette conviction qui guide nos interventions.</p><Link href="/actualites" className="btn btn-secondary mt-10">← Toutes les actualités</Link></article></>}
