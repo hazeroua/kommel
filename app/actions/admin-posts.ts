@@ -3,7 +3,9 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createSessionClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/server";
+import { getDb as openDb } from "@/lib/db";
+import { saveUpload } from "@/lib/db/storage";
 import { postKinds } from "@/types";
 
 const postSchema = z.object({
@@ -24,8 +26,10 @@ const postSchema = z.object({
 
 type PostState = { error?: string; fieldErrors?: Record<string, string> };
 
+/** Toute action admin vérifie la session avant d'accéder à la base. */
 async function getDb() {
-  return await createSessionClient();
+  await requireAdmin();
+  return openDb();
 }
 
 export async function createPost(
@@ -118,19 +122,12 @@ export async function uploadCoverImage(postId: string, formData: FormData) {
   const db = await getDb();
   if (!db) return { error: "Non disponible." };
 
-  const ext = file.name.split(".").pop() ?? "jpg";
-  const path = `posts/${postId}/cover.${ext}`;
-  const bytes = await file.arrayBuffer();
-
-  const { error: uploadError } = await db.storage
-    .from("public-images")
-    .upload(path, bytes, { upsert: true, contentType: file.type });
-
-  if (uploadError) return { error: uploadError.message };
-
-  const {
-    data: { publicUrl },
-  } = db.storage.from("public-images").getPublicUrl(path);
+  let publicUrl: string;
+  try {
+    publicUrl = await saveUpload(`posts/${postId.replace(/[^a-z0-9-]/gi, "")}`, "cover", file);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Envoi impossible." };
+  }
 
   const { error: updateError } = await db
     .from("posts")

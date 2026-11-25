@@ -2,7 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { RichNode } from "@/types";
 
 interface RichEditorProps {
@@ -11,9 +11,16 @@ interface RichEditorProps {
 }
 
 export function RichEditor({ name, initialContent }: RichEditorProps) {
+  // Tiptap v3 ne re-rend plus le composant à chaque frappe : on stocke le JSON
+  // dans un état mis à jour par onUpdate, sinon le champ caché reste vide.
+  const [json, setJson] = useState(initialContent ? JSON.stringify(initialContent) : "");
   const editor = useEditor({
     extensions: [StarterKit],
     content: initialContent ?? "",
+    immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
+    onCreate: ({ editor }) => setJson(JSON.stringify(editor.getJSON())),
+    onUpdate: ({ editor }) => setJson(JSON.stringify(editor.getJSON())),
     editorProps: {
       attributes: {
         class:
@@ -29,7 +36,6 @@ export function RichEditor({ name, initialContent }: RichEditorProps) {
     }
   }, [editor, initialContent]);
 
-  const json = editor ? JSON.stringify(editor.getJSON()) : "";
 
   return (
     <div className="rounded-card border-2 border-brun bg-blanc overflow-hidden">

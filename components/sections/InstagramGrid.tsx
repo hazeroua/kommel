@@ -1,4 +1,4 @@
-import { createSessionClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
 
 type IgPost = {
   id: string;
@@ -11,9 +11,9 @@ export async function InstagramGrid() {
   let posts: IgPost[] = [];
 
   try {
-    const supabase = await createSessionClient();
-    if (supabase) {
-      const { data } = await supabase
+    const db = getDb();
+    if (db) {
+      const { data } = await db
         .from("instagram_posts")
         .select("id,image_url,permalink,alt")
         .order("sort_order")
@@ -21,7 +21,7 @@ export async function InstagramGrid() {
       if (data?.length) posts = data as IgPost[];
     }
   } catch {
-    // Supabase not configured
+    // Base indisponible : on garde les visuels par défaut
   }
 
   if (posts.length === 0) return null; // rien à afficher si vide

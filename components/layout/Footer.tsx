@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { WaveEdge } from "@/components/decor/WaveEdge";
-import { legalNav, mainNav, site, supportHref } from "@/lib/site";
+import { legalNav, mainNav, site, supportHref, volunteerHref } from "@/lib/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -48,7 +48,10 @@ export function Footer() {
                 </li>
               </ul>
               <ul className="mt-6 flex flex-wrap gap-2" aria-label="Réseaux sociaux">
-                {site.socials.map((s, i) => (
+                {[
+                  ...site.socials,
+                  ...(site.helloAssoUrl ? [{ label: "HelloAsso", href: site.helloAssoUrl }] : []),
+                ].map((s, i) => (
                   <li key={s.href}>
                     <a
                       href={s.href}
@@ -76,6 +79,11 @@ export function Footer() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <Link href={volunteerHref} className="link-feutre">
+                    Devenir bénévole
+                  </Link>
+                </li>
                 <li>
                   <Link href={supportHref} className="link-feutre">
                     Nous soutenir

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { listContactMessages } from "@/app/actions/admin-read";
 import { updateMessageStatus } from "@/app/actions/admin-requests";
 import {
   messageKindLabels,
@@ -9,18 +10,9 @@ import {
   requestStatuses,
   type RequestStatus,
 } from "@/types";
-import { createBrowserClient } from "@supabase/ssr";
 
 async function fetchMessages(): Promise<ContactMessage[]> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase
-    .from("contact_messages")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return (data ?? []) as ContactMessage[];
+  return listContactMessages();
 }
 
 const statusColor: Record<RequestStatus, string> = {

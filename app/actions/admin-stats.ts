@@ -2,7 +2,8 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createSessionClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/server";
+import { getDb as openDb } from "@/lib/db";
 import { accentColors } from "@/types";
 
 const statSchema = z.object({
@@ -15,8 +16,10 @@ const statSchema = z.object({
 
 type State = { error?: string; fieldErrors?: Record<string, string> };
 
+/** Toute action admin vérifie la session avant d'accéder à la base. */
 async function getDb() {
-  return await createSessionClient();
+  await requireAdmin();
+  return openDb();
 }
 
 export async function createStat(_prev: State, formData: FormData): Promise<State> {

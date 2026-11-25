@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Hero } from "@/components/sections/Hero";
 import { Stats } from "@/components/sections/Stats";
 import { Testimonials } from "@/components/sections/Testimonials";
-import { createSessionClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
 import type { AccentColor } from "@/types";
 
 export const revalidate = 0;
@@ -21,7 +21,7 @@ type TestimonialRow = {
 };
 
 async function getHomeData() {
-  const db = await createSessionClient();
+  const db = getDb();
   if (!db) return { stats: null, testimonials: null };
   const [statsRes, testimonialsRes] = await Promise.all([
     db
@@ -61,6 +61,37 @@ export default async function HomePage() {
             oser, se dépasser et transmettre à son tour. Nous créons des rencontres qui rendent
             la confiance concrète et contagieuse.
           </p>
+        </div>
+      </section>
+
+      <section className="px-5 pt-16 sm:px-8 sm:pt-24">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="mb-4 font-display text-sm font-extrabold uppercase tracking-widest text-corail">
+              Le teaser
+            </p>
+            <h2 className="text-title leading-[0.9]">KOM&apos;MEL en 30 secondes.</h2>
+            <p className="mt-6 max-w-xl text-lead text-brun/75">
+              Une association engagée pour l&apos;émancipation des jeunes à travers le sport et
+              l&apos;éducation : ateliers, conférences, et une équipe qui se bouge sur le tatami comme
+              sur les réseaux.
+            </p>
+            <Link href="/association" className="link-feutre mt-8 inline-block font-bold">
+              Découvrir l&apos;association →
+            </Link>
+          </div>
+          <div className="mx-auto w-full max-w-[340px] rotate-2 overflow-hidden rounded-card border-2 border-brun bg-brun shadow-dure-lg">
+            <video
+              controls
+              playsInline
+              preload="none"
+              poster="/images/teaser-miniature.jpg"
+              className="aspect-[9/16] w-full object-cover"
+            >
+              <source src="/videos/teaser-kommel.mp4" type="video/mp4" />
+              Ton navigateur ne peut pas lire cette vidéo.
+            </video>
+          </div>
         </div>
       </section>
 

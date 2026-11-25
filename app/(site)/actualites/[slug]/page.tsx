@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageIntro } from "@/components/sections/PageIntro";
-import { createSessionClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
 import { postKindLabels, type RichNode } from "@/types";
 
 export const revalidate = 0;
@@ -19,7 +19,7 @@ type PostDetail = {
 };
 
 async function getPost(slug: string): Promise<PostDetail | null> {
-  const db = await createSessionClient();
+  const db = getDb();
   if (!db) return null;
   const { data, error } = await db
     .from("posts")
@@ -32,6 +32,13 @@ async function getPost(slug: string): Promise<PostDetail | null> {
     return null;
   }
   return (data as PostDetail | null) ?? null;
+}
+
+/** Vrai si le document Tiptap contient au moins un texte. */
+function hasText(node: RichNode | null): boolean {
+  if (!node) return false;
+  if (node.type === "text") return Boolean(node.text?.trim());
+  return (node.content ?? []).some(hasText);
 }
 
 function renderNode(node: RichNode, key: string): React.ReactNode {
@@ -118,7 +125,7 @@ export default async function ArticlePage({
         <p className="text-sm font-semibold uppercase tracking-wide text-brun/60">
           {date}
         </p>
-        {post.content ? (
+        {hasText(post.content) && post.content ? (
           <div className="mt-6">{renderNode(post.content, "r")}</div>
         ) : (
           <p className="mt-6 text-brun/70">

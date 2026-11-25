@@ -1,24 +1,19 @@
 "use client";
 
 import { useActionState, useTransition } from "react";
+import { getPostById } from "@/app/actions/admin-read";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { updatePost, deletePost, uploadCoverImage } from "@/app/actions/admin-posts";
 import { RichEditor } from "@/components/admin/RichEditor";
 import type { Post } from "@/types";
 import { use } from "react";
-import { createBrowserClient } from "@supabase/ssr";
 
 type State = { error?: string; fieldErrors?: Record<string, string> };
 const initial: State = {};
 
 async function fetchPost(id: string): Promise<Post | null> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase.from("posts").select("*").eq("id", id).maybeSingle();
-  return data as Post | null;
+  return getPostById(id);
 }
 
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createSessionClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/server";
+import { getDb } from "@/lib/db";
 import type { Post } from "@/types";
 
 export const metadata: Metadata = { title: "Articles" };
@@ -19,8 +20,8 @@ const kindLabel: Record<Post["kind"], string> = {
 };
 
 async function getPosts() {
-  const db = await createSessionClient();
-  if (!db) return [];
+  await requireAdmin();
+  const db = getDb();
   const { data } = await db
     .from("posts")
     .select("id,title,slug,kind,status,published_on")

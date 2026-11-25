@@ -1,20 +1,15 @@
 "use client";
 
 import { useActionState, useTransition, useEffect, useState } from "react";
+import { listStats } from "@/app/actions/admin-read";
 import { createStat, updateStat, deleteStat, reorderStat } from "@/app/actions/admin-stats";
 import { accentColors, accentLabels, type Stat } from "@/types";
-import { createBrowserClient } from "@supabase/ssr";
 
 type State = { error?: string; fieldErrors?: Record<string, string> };
 const initial: State = {};
 
 async function fetchStats(): Promise<Stat[]> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase.from("key_stats").select("*").order("sort_order");
-  return (data ?? []) as Stat[];
+  return listStats();
 }
 
 function StatForm({

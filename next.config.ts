@@ -1,25 +1,22 @@
 import type { NextConfig } from "next";
 
-// Domaines de ressources autorisés (Supabase storage + Brevo pixel de suivi)
-const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
-  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).host
-  : "";
 
 /**
  * Content Security Policy.
  * Ligne directrice : aussi restrictive que possible sans casser les fonctions légitimes.
  * - Toutes les polices et images de confiance sont auto-hébergées → pas de CDN externe dans default-src.
- * - Supabase est autorisé uniquement pour connect-src (API) et img-src (bucket public-images).
+ * - Images : le site lui-même (dont /uploads) + images HTTPS externes (galerie Instagram).
  * - Cloudflare Turnstile nécessite frames + scripts depuis challenges.cloudflare.com.
  * - 'unsafe-inline' retiré pour les styles → remplacé par nonces en production si nécessaire.
  */
 const csp = [
   `default-src 'self'`,
-  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com`,
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://challenges.cloudflare.com`,
   `style-src 'self' 'unsafe-inline'`,
-  `img-src 'self' data: blob: ${supabaseHost ? `https://${supabaseHost}` : ""}`,
+  `img-src 'self' data: blob: https:`,
   `font-src 'self'`,
-  `connect-src 'self' ${supabaseHost ? `https://${supabaseHost} wss://${supabaseHost}` : ""} https://api.brevo.com`,
+  `media-src 'self'`,
+  `connect-src 'self' https://api.brevo.com`,
   `frame-src https://challenges.cloudflare.com https://www.helloasso.com`,
   `object-src 'none'`,
   `base-uri 'self'`,
@@ -46,9 +43,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: supabaseHost
-      ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/**" }]
-      : [],
+    remotePatterns: [],
   },
   async headers() {
     return [
