@@ -10,12 +10,13 @@ async function getStats() {
   await requireAdmin();
   const db = getDb();
 
-  const [posts, testimonials, stats, demandes, messages] = await Promise.all([
+  const [posts, testimonials, stats, demandes, messages, newsletter] = await Promise.all([
     db.from("posts").select("id", { count: "exact", head: true }),
     db.from("testimonials").select("id", { count: "exact", head: true }),
     db.from("key_stats").select("id", { count: "exact", head: true }),
     db.from("intervention_requests").select("status", { count: "exact" }),
     db.from("contact_messages").select("status", { count: "exact" }),
+    db.from("newsletter_subscribers").select("id", { count: "exact", head: true }),
   ]);
 
   const nouvelleDemandes = (demandes.data ?? []).filter(
@@ -31,6 +32,7 @@ async function getStats() {
     stats: stats.count ?? 0,
     demandes: demandes.count ?? 0,
     messages: messages.count ?? 0,
+    newsletter: newsletter.count ?? 0,
     nouvelleDemandes,
     nouveauxMessages,
   };
@@ -42,6 +44,7 @@ const sections = [
   { href: "/admin/stats", label: "Chiffres clés", emoji: "📊", key: "stats" as const },
   { href: "/admin/demandes", label: "Demandes d'intervention", emoji: "📋", key: "demandes" as const },
   { href: "/admin/messages", label: "Messages", emoji: "✉️", key: "messages" as const },
+  { href: "/admin/newsletter", label: "Inscrits newsletter", emoji: "📬", key: "newsletter" as const },
 ];
 
 export default async function AdminDashboardPage() {

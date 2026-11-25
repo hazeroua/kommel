@@ -8,6 +8,7 @@ const navLinks = [
   { href: "/admin/stats", label: "Chiffres clés" },
   { href: "/admin/demandes", label: "Demandes" },
   { href: "/admin/messages", label: "Messages" },
+  { href: "/admin/newsletter", label: "Newsletter" },
   { href: "/admin/instagram", label: "Instagram" },
 ];
 

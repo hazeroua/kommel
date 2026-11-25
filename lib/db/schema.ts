@@ -102,6 +102,13 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at   TEXT NOT NULL DEFAULT ${NOW}
 );
 
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id         TEXT PRIMARY KEY,
+  email      TEXT NOT NULL UNIQUE COLLATE NOCASE,
+  first_name TEXT,
+  created_at TEXT NOT NULL DEFAULT ${NOW}
+);
+
 CREATE TABLE IF NOT EXISTS rate_limits (
   key          TEXT NOT NULL,
   window_start TEXT NOT NULL,
