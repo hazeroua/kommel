@@ -1,3 +1,5 @@
+> **Mise à jour (novembre 2026)** : Supabase a été remplacé par SQLite + fichiers dans `DATA_DIR` (`/data` sur Railway) et une connexion admin par mot de passe. Voir le README. Les mentions de Supabase ci-dessous sont historiques.
+
 # KOM'MEL — Phase 1 : Plan
 
 ## 1. Choix techniques

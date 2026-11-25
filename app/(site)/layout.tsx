@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { PageTransition } from "@/components/layout/PageTransition";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,7 +13,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </a>
       <Header />
       <main id="contenu" tabIndex={-1} className="outline-none">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
       <Footer />
     </>

@@ -263,3 +263,52 @@
 @media (prefers-reduced-motion: reduce) {
   .marquee { animation: none; }
 }
+
+/* --- Transition entre pages ------------------------------------------
+ * Le header et le footer restent fixes (root sans animation) ;
+ * l'ancienne page s'efface en glissant vers le haut, la nouvelle arrive
+ * par le bas avec le petit rebond élastique de la DA.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-old(.page-exit) {
+  animation: page-out 220ms var(--ease-douce) both;
+}
+::view-transition-new(.page-enter) {
+  animation: page-in 560ms var(--ease-elastique) 140ms both;
+}
+/* Le header a sa propre couche, toujours au-dessus de la page qui s'anime. */
+.site-header {
+  view-transition-name: site-header;
+}
+::view-transition-group(site-header) {
+  z-index: 100;
+  animation: none;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.985) rotate(-0.5deg);
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(56px) rotate(0.8deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useTransition } from "react";
+import { listTestimonials } from "@/app/actions/admin-read";
 import { useState } from "react";
 import {
   createTestimonial,
@@ -10,22 +11,13 @@ import {
   reorderTestimonial,
 } from "@/app/actions/admin-testimonials";
 import { accentColors, accentLabels, type Testimonial } from "@/types";
-import { createBrowserClient } from "@supabase/ssr";
 import { useEffect } from "react";
 
 type State = { error?: string; fieldErrors?: Record<string, string> };
 const initial: State = {};
 
 async function fetchTestimonials(): Promise<Testimonial[]> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase
-    .from("testimonials")
-    .select("*")
-    .order("sort_order", { ascending: true });
-  return (data ?? []) as Testimonial[];
+  return listTestimonials();
 }
 
 function TestimonialForm({

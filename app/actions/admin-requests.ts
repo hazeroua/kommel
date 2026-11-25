@@ -1,14 +1,17 @@
 "use server";
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { createSessionClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/server";
+import { getDb as openDb } from "@/lib/db";
 import { requestStatuses } from "@/types";
 import { z } from "zod";
 
 const statusSchema = z.enum(requestStatuses);
 
+/** Toute action admin vérifie la session avant d'accéder à la base. */
 async function getDb() {
-  return await createSessionClient();
+  await requireAdmin();
+  return openDb();
 }
 
 export async function updateInterventionStatus(id: string, status: string) {

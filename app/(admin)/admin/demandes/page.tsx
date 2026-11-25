@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { listInterventionRequests } from "@/app/actions/admin-read";
 import { updateInterventionStatus } from "@/app/actions/admin-requests";
 import {
   actionTypeLabels,
@@ -10,18 +11,9 @@ import {
   requestStatuses,
   type RequestStatus,
 } from "@/types";
-import { createBrowserClient } from "@supabase/ssr";
 
 async function fetchDemandes(): Promise<InterventionRequest[]> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase
-    .from("intervention_requests")
-    .select("*")
-    .order("created_at", { ascending: false });
-  return (data ?? []) as InterventionRequest[];
+  return listInterventionRequests();
 }
 
 const statusColor: Record<RequestStatus, string> = {

@@ -1,13 +1,13 @@
 "use client";
 
 import { useActionState, useTransition, useEffect, useState } from "react";
+import { listInstagramPosts } from "@/app/actions/admin-read";
 import {
   createInstagramPost,
   updateInstagramPost,
   deleteInstagramPost,
   reorderInstagramPost,
 } from "@/app/actions/admin-instagram";
-import { createBrowserClient } from "@supabase/ssr";
 
 type IgPost = {
   id: string;
@@ -21,15 +21,7 @@ type State = { error?: string; fieldErrors?: Record<string, string> };
 const initial: State = {};
 
 async function fetchPosts(): Promise<IgPost[]> {
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-  const { data } = await supabase
-    .from("instagram_posts")
-    .select("*")
-    .order("sort_order");
-  return (data ?? []) as IgPost[];
+  return listInstagramPosts();
 }
 
 function IgForm({
@@ -73,7 +65,7 @@ function IgForm({
         {state.fieldErrors?.image_url && (
           <p className="field-error">{state.fieldErrors.image_url}</p>
         )}
-        <p className="mt-1 text-xs text-brun/50">Copier l&apos;URL publique depuis Supabase Storage ou autre hébergeur.</p>
+        <p className="mt-1 text-xs text-brun/50">Coller l&apos;adresse publique (https://…) de l&apos;image.</p>
       </div>
       <div>
         <label className="field-label" htmlFor="permalink">
@@ -183,8 +175,7 @@ export default function InstagramPage() {
         <div className="rounded-card border-2 border-dashed border-brun/30 py-16 text-center text-brun/50">
           <p>Aucun post pour l&apos;instant.</p>
           <p className="mt-2 text-sm">
-            Uploadez une image dans Supabase Storage → bucket <strong>public-images</strong>,
-            copiez l&apos;URL publique, et collez-la ici.
+            Ajoutez un post en collant l&apos;adresse publique de l&apos;image (https://…).
           </p>
         </div>
       ) : (

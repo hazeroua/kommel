@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PageIntro } from "@/components/sections/PageIntro";
-import { createSessionClient } from "@/lib/supabase/server";
+import { getDb } from "@/lib/db";
 import { postKindLabels } from "@/types";
 
 export const revalidate = 0;
@@ -17,7 +17,7 @@ type PostCard = {
 };
 
 async function getPublishedPosts(): Promise<PostCard[]> {
-  const db = await createSessionClient();
+  const db = getDb();
   if (!db) return [];
   const { data, error } = await db
     .from("posts")

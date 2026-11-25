@@ -1,18 +1,14 @@
-import { createServiceClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/server";
+import { getDb } from "@/lib/db";
 import Link from "next/link";
 
 export const metadata = { title: "Tableau de bord" };
 export const dynamic = "force-dynamic";
 
-/**
- * Dashboard admin : lectures via le service client (bypass RLS).
- * L'accès à /admin/* est déjà protégé par le proxy, donc on sait qu'on parle
- * à un admin — pas besoin de refaire passer RLS sur les reads du dashboard,
- * ce qui garantit que les compteurs s'affichent toujours.
- */
+/** Dashboard admin : compteurs lus directement dans la base. */
 async function getStats() {
-  const db = createServiceClient();
-  if (!db) return null;
+  await requireAdmin();
+  const db = getDb();
 
   const [posts, testimonials, stats, demandes, messages] = await Promise.all([
     db.from("posts").select("id", { count: "exact", head: true }),

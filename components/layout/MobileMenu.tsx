@@ -9,11 +9,12 @@ import type { NavItem } from "@/lib/site";
 type MobileMenuProps = {
   items: NavItem[];
   supportHref: string;
+  volunteerHref: string;
 };
 
-const tilts = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2"];
+const tilts = ["-rotate-1", "rotate-1"];
 
-export function MobileMenu({ items, supportHref }: MobileMenuProps) {
+export function MobileMenu({ items, supportHref, volunteerHref }: MobileMenuProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -63,7 +64,7 @@ export function MobileMenu({ items, supportHref }: MobileMenuProps) {
   }, [open]);
 
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <button
         ref={buttonRef}
         type="button"
@@ -96,13 +97,14 @@ export function MobileMenu({ items, supportHref }: MobileMenuProps) {
             </div>
 
             <nav aria-label="Menu principal" className="mt-10 flex-1">
-              <ul className="flex flex-col gap-4">
+              <ul className="flex flex-col items-start gap-5">
                 {items.map((item, i) => (
                   <li key={item.href} className={tilts[i % tilts.length]}>
                     <Link
                       href={item.href}
+                      onClick={() => setOpen(false)}
                       aria-current={pathname === item.href ? "page" : undefined}
-                      className="inline-block rounded-pill bg-creme px-6 py-3 font-display text-3xl leading-none font-bold uppercase shadow-dure aria-[current=page]:bg-blanc"
+                      className="inline-block rounded-pill border-2 border-brun bg-creme px-6 pt-3.5 pb-3 font-display text-3xl leading-none font-bold uppercase shadow-dure transition-transform duration-300 ease-(--ease-elastique) hover:-translate-y-1 hover:-rotate-2 hover:bg-rose active:scale-95 aria-[current=page]:bg-blanc"
                     >
                       {item.label}
                     </Link>
@@ -111,9 +113,14 @@ export function MobileMenu({ items, supportHref }: MobileMenuProps) {
               </ul>
             </nav>
 
-            <Link href={supportHref} className="btn btn-primary mt-10 self-start text-xl">
-              Nous soutenir
-            </Link>
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link href={volunteerHref} onClick={() => setOpen(false)} className="btn btn-rose text-xl">
+                Devenir bénévole
+              </Link>
+              <Link href={supportHref} onClick={() => setOpen(false)} className="btn btn-primary text-xl">
+                Nous soutenir
+              </Link>
+            </div>
           </div>,
           document.body,
         )}

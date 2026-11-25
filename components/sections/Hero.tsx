@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Placeholder } from "@/components/decor/Placeholder";
+import Image from "next/image";
 
 const PILLS = [
   { label: "Judo", color: "bg-corail", deg: -3 },
@@ -23,7 +23,7 @@ export function Hero() {
             "radial-gradient(ellipse 80% 60% at 60% 20%, rgba(243,143,181,0.18) 0%, transparent 70%), radial-gradient(ellipse 60% 50% at 20% 80%, rgba(138,151,236,0.13) 0%, transparent 70%)",
         }}
       />
-      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pt-12 pb-16 sm:px-8 sm:pt-16 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:pb-24">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pt-30 pb-16 sm:px-8 sm:pt-36 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8 lg:pb-24">
         <div>
           <div className="mb-6 flex flex-wrap gap-2 sm:gap-3" aria-hidden="true">
             {PILLS.map((pill, i) => (
@@ -89,10 +89,14 @@ export function Hero() {
             >
               ⭐ Championne
             </div>
-            <Placeholder
-              label="Photo Melkia détourée"
-              color="rose"
-              className="mx-auto aspect-[4/5] w-full max-w-[320px] rounded-card border-2 border-brun shadow-dure-lg lg:max-w-[400px]"
+            <Image
+              src="/images/melkia-dojo.jpg"
+              alt="Melkia Auchecorne en kimono, ceinture noire, sur le tatami"
+              width={900}
+              height={1352}
+              priority
+              sizes="(min-width: 1024px) 400px, 320px"
+              className="mx-auto aspect-[4/5] w-full max-w-[320px] rounded-card border-2 border-brun object-cover object-top shadow-dure-lg lg:max-w-[400px]"
             />
           </div>
         </motion.div>
